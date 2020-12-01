@@ -7,87 +7,177 @@ public class Movement : MonoBehaviour
 
     public Camera cam;
     public float sens;
+    public float wallRotAngle;
+    public float currentAngle;
+    public float targetAngle;
+    public float lerpDuration;
     public float movSpeed;
+    public float grav;
+    public float currentSpeed;
     public float jumpForce;
+    public float wallJumpForce;
+
+    public float maxSpeed;
+
+    public float drag;
+
+    public Transform left;
+    public Transform right;
 
     public Rigidbody rb;
 
     public bool isGrounded;
     public bool wasGrounded;
+
+    public bool isGroundedWallL;
+    public bool wasGroundedWallL;
+
+    public bool isGroundedWallR;
+    public bool wasGroundedWallR;
     
     public bool isJumping;
 
-    CapsuleCollider playerCol;
-    Vector3 groundCheckNormal;
+    public bool isWallJumping;
 
+    SphereCollider playerCol;
     private Quaternion charTargetRot;
     private Quaternion cameraTargetRot;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    float xRot = 0; 
+    float yRot = 0;
 
+    int layerMask = 1 << 8;
+    
+    // Start is called before the first frame update
+    void Awake(){
+
+        layerMask = ~layerMask;
         rb = GetComponent<Rigidbody>();
-        playerCol = GetComponent<CapsuleCollider>();
-        
+        playerCol = GetComponent<SphereCollider>();
+        left.localPosition = new Vector3(playerCol.radius,0,0);
+        right.localPosition = new Vector3(-playerCol.radius,0,0);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
     }
 
     // Update is called once per frame
     void FixedUpdate(){
 
+        Gravity();
         Move();
-        RotateView();
         
     }
+
+    void Update(){
+
+        LookRotation();
+
+    }
     
+    void Gravity(){
+
+        rb.AddForce(Vector3.down * grav,ForceMode.Acceleration);
+
+    }
     private void Move(){
 
-        GroundCheck();
-            Vector2 input = GetInput();
+            if(isGroundedWallL && !isGrounded && !isWallJumping){
 
-            if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && isGrounded)
-            {
+                //Debug.Log("Rotating right");
+                targetAngle = wallRotAngle;
+
+            } else if(isGroundedWallR  && !isGrounded && !isWallJumping){
+
+                //Debug.Log("Rotating left");
+                targetAngle = -wallRotAngle;
+
+            } else if(!isGroundedWallL && !isGroundedWallR){
+
+                //Debug.Log("Centering");
+                targetAngle = 0;
+
+            }
+
+            GroundCheck();
+            WallCheck();
+
+            Vector3 input = GetInput();
+            Vector3 desiredMove = new Vector3();
+            
+
+            if (isGrounded){
+
+                isJumping = false;
+                desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+
+                desiredMove.x = desiredMove.x * maxSpeed;
+                desiredMove.y = rb.velocity.y;
+                desiredMove.z = desiredMove.z * maxSpeed;
+                
+                rb.velocity = desiredMove;
+
                 // always move along the camera forward as it is the direction that it being aimed at
-                Vector3 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
-                desiredMove = Vector3.ProjectOnPlane(desiredMove, groundCheckNormal).normalized;
+
+                if (!isJumping && input.z > 0){
+
+                    // rb.drag = 0;
+                    //rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                    rb.AddRelativeForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+                    isJumping = true;
+
+                }
+
+
+            } else {
+
+                if(isGroundedWallL || isGroundedWallR){
+
+                    if (!isWallJumping){
+
+                        if(input.z > 0 && (input.x > 0 || input.y > 0)){
+
+                            rb.velocity = Vector3.zero;
+                            rb.AddRelativeForce(new Vector3(wallJumpForce * input.x, wallJumpForce * 1.75f, wallJumpForce), ForceMode.Impulse);
+                            isWallJumping = true;
+
+                        } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
+
+                            rb.velocity = Vector3.zero;
+                            rb.AddRelativeForce(new Vector3(0, wallJumpForce * 1.75f, 0), ForceMode.Impulse);
+                            isWallJumping = true;
+
+                        }
+
+                    } 
+
+                }
+
+                desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
 
                 desiredMove.x = desiredMove.x * movSpeed;
                 desiredMove.z = desiredMove.z * movSpeed;
-                desiredMove.y = desiredMove.y * movSpeed;
-                 rb.AddForce(desiredMove, ForceMode.Impulse);
+                rb.AddForce(desiredMove, ForceMode.Acceleration);
+
+            } 
+
+
+            currentSpeed = new Vector3(rb.velocity.x,0,rb.velocity.z).magnitude;
+
+            if(currentSpeed > maxSpeed){
+
+                rb.AddForce(new Vector3(-rb.velocity.normalized.x * drag,0,-rb.velocity.normalized.z * drag),ForceMode.Acceleration);
+
             }
-
-            if (isGrounded)
-            {
-                rb.drag = 5f;
-
-                if (isJumping)
-                {
-                    rb.drag = 0f;
-                    rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-                    rb.AddForce(new Vector3(0f, jumpForce, 0f), ForceMode.Impulse);
-                    isJumping = true;
-                }
-
-                if (!isJumping && Mathf.Abs(input.x) < float.Epsilon && Mathf.Abs(input.y) < float.Epsilon && rb.velocity.magnitude < 1f)
-                {
-                    rb.Sleep();
-                }
-            }
-            else
-            {
-                rb.drag = 0f;
-                
-            }
-            isJumping = false;
-    }   
-
-    private Vector2 GetInput(){
             
-        Vector2 input = new Vector2
+    }   
+    private Vector3 GetInput(){
+            
+        Vector3 input = new Vector3
             {
-                x = Input.GetAxis("Horizontal"),
-                y = Input.GetAxis("Vertical")
+                x = Input.GetAxisRaw("Horizontal"),
+                y = Input.GetAxisRaw("Vertical"),
+                z = Input.GetAxisRaw("Jump")
             };
 
         if(Input.GetKeyUp(KeyCode.Escape)){
@@ -98,89 +188,144 @@ public class Movement : MonoBehaviour
             Cursor.visible = false;
         }
 
-
         return input;
-    }
-    
-    private void RotateView() {
-            //avoids the mouse looking if the game is effectively paused
-            if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
-
-            // get the rotation before it's changed
-            float oldYRotation = transform.eulerAngles.y;
-
-            LookRotation();
-
-            if (isGrounded)
-            {
-                // Rotate the rigidbody velocity to match the new direction that the character is looking
-                Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
-                rb.velocity = velRotation*rb.velocity;
-            }
-        }
+    }    
 
     public void LookRotation() {
 
-            Transform camTransform = cam.transform;
+            xRot += Input.GetAxis("Mouse X") * sens;
+            yRot += Input.GetAxis("Mouse Y") * sens;
 
-            float yRot = Input.GetAxis("Mouse X") * sens;
-            float xRot = Input.GetAxis("Mouse Y") * sens;
+            //Debug.Log(xRot + " " + yRot);
+            yRot = Mathf.Clamp (yRot, -90F, 90F);
 
-            charTargetRot *= Quaternion.Euler (0f, yRot, 0f);
-            cameraTargetRot *= Quaternion.Euler (-xRot, 0f, 0f);
-
-            cameraTargetRot = ClampRotationAroundXAxis(cameraTargetRot);
-
-            transform.localRotation = charTargetRot;
-            camTransform.localRotation = cameraTargetRot;
+            //cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x,0,currentAngle));
+            cam.transform.localRotation = Quaternion.Euler (-yRot, 0f, cam.transform.localRotation.eulerAngles.z);
+            transform.rotation = Quaternion.Euler (0f, xRot, 0f);
 
         }
 
+    public void WallRotate(float target){
+
+        StartCoroutine(
+
+                LerpToTarget(
+                        cam.transform.localRotation.eulerAngles.z,
+                        target,
+                        lerpDuration
+                        )
+        
+            );
+
+        //cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x,0,currentAngle));
+        // The step size is equal to speed times frame time.
+        // Rotate our transform a step closer to the target's.
+        
+
+    }
+
+    IEnumerator LerpToTarget(float start,float end,float dur){
+
+        float timeElapsed = 0;
+
+        Debug.Log("Start:" + start + " End " + end);
+        if(currentAngle != end){
+
+            currentAngle = cam.transform.localRotation.z;
+
+            while (timeElapsed < lerpDuration)
+            {
+                
+                currentAngle = Mathf.LerpAngle(start, end, timeElapsed / lerpDuration);
+                timeElapsed += Time.deltaTime;
+                cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x,0,currentAngle));
+                yield return null;
+            }
+
+
+        }
+
+
+    }
+    void OnDrawGizmos() {
+
+        Vector3 groundCheckPos = new Vector3(transform.position.x,transform.position.y - playerCol.radius,transform.position.z);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(groundCheckPos, playerCol.radius/4f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(new Vector3(transform.position.x + playerCol.radius,transform.position.y,transform.position.z + playerCol.radius), playerCol.radius * 0.75f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x + playerCol.radius,transform.position.y,transform.position.z - playerCol.radius), playerCol.radius * 0.75f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x - playerCol.radius,transform.position.y,transform.position.z + playerCol.radius), playerCol.radius * 0.75f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x - playerCol.radius,transform.position.y,transform.position.z - playerCol.radius), playerCol.radius * 0.75f);
+        
+    }
     private void GroundCheck(){
 
             wasGrounded = isGrounded;
-            RaycastHit hitInfo;
-            if (  
-            Physics.SphereCast(
-                
-                transform.position, 
-                playerCol.radius, 
-                Vector3.down, 
-                out hitInfo,
-                (playerCol.height/2f) + 0.1f, 
-                Physics.AllLayers, 
-                QueryTriggerInteraction.Ignore
-                
-            ))
-            {
+            if (Physics.CheckSphere(new Vector3(transform.position.x,transform.position.y - playerCol.radius,transform.position.z), playerCol.radius/4f,layerMask)){
+
                 isGrounded = true;
-                groundCheckNormal = hitInfo.normal;
-            }
-            else
-            {
+
+            } else {
+
                 isGrounded = false;
-                groundCheckNormal = Vector3.up;
+
             }
-            if (!wasGrounded && isGrounded && isJumping)
-            {
+            if (!wasGrounded && isGrounded && isJumping){
+
                 isJumping = false;
+
             }
         }
+    private void WallCheck(){
 
-    Quaternion ClampRotationAroundXAxis(Quaternion q)
-        {
-            q.x /= q.w;
-            q.y /= q.w;
-            q.z /= q.w;
-            q.w = 1.0f;
+            if(isGroundedWallL != wasGroundedWallL || isGroundedWallR != wasGroundedWallR){
 
-            float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan (q.x);
+                Debug.Log("Starting Rotate");
+                WallRotate(targetAngle);
 
-            angleX = Mathf.Clamp (angleX, -90F, 90F);
+            } 
 
-            q.x = Mathf.Tan (0.5f * Mathf.Deg2Rad * angleX);
+            wasGroundedWallL = isGroundedWallL;
+            wasGroundedWallR = isGroundedWallR;
+            if (Physics.CheckCapsule(
+            new Vector3(left.position.x,left.position.y,left.position.z + playerCol.radius)
+            ,new Vector3(left.position.x,left.position.y,left.position.z - playerCol.radius)
+            ,playerCol.radius * 0.75f
+            ,layerMask)){
 
-            return q;
+                isGroundedWallL = true;
+
+
+            } else {
+
+                isGroundedWallL = false;
+
+            }
+
+            if (Physics.CheckCapsule(
+           new Vector3(right.position.x ,right.position.y,right.position.z + playerCol.radius)
+            ,new Vector3(right.position.x ,right.position.y,right.position.z - playerCol.radius)
+            ,playerCol.radius * 0.75f
+            ,layerMask)){
+
+                isGroundedWallR = true;
+
+            } else {
+
+                isGroundedWallR = false;
+
+            }
+
+            if (!isGroundedWallL && !isGroundedWallR){
+
+                isWallJumping = false;
+
+            }
+
+
         }
 
 }
