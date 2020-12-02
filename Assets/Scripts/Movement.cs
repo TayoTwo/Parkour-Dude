@@ -5,6 +5,7 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
 
+    public GameObject UI;
     public Camera cam;
     public float sens;
     public float wallRotAngle;
@@ -48,12 +49,16 @@ public class Movement : MonoBehaviour
     float yRot = 0;
 
     int layerMask = 1 << 8;
+
+    AudioSource jumpClip;
     
     // Start is called before the first frame update
     void Awake(){
 
+        sens = MouseSensitivity.sens;
         layerMask = ~layerMask;
         rb = GetComponent<Rigidbody>();
+        jumpClip = GetComponent<AudioSource>();
         playerCol = GetComponent<SphereCollider>();
         left.localPosition = new Vector3(playerCol.radius,0,0);
         right.localPosition = new Vector3(-playerCol.radius,0,0);
@@ -72,6 +77,7 @@ public class Movement : MonoBehaviour
 
     void Update(){
 
+        ToggleUI();
         LookRotation();
 
     }
@@ -83,6 +89,7 @@ public class Movement : MonoBehaviour
     }
     private void Move(){
 
+           
             if(isGroundedWallL && !isGrounded && !isWallJumping){
 
                 //Debug.Log("Rotating right");
@@ -127,6 +134,12 @@ public class Movement : MonoBehaviour
                     rb.AddRelativeForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
                     isJumping = true;
 
+                    if(!jumpClip.isPlaying) {
+
+                        jumpClip.Play();
+
+                    }
+
                 }
                 
                 if(currentSpeed > maxSpeed){
@@ -149,13 +162,25 @@ public class Movement : MonoBehaviour
                             rb.AddRelativeForce(new Vector3(wallJumpForce * input.x, wallJumpForce * 1.85f, wallJumpForce), ForceMode.Impulse);
                             isWallJumping = true;
 
-                        } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
+                            if(!jumpClip.isPlaying) {
+
+                                jumpClip.Play();
+
+                            }
+
+                    } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
 
                             rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
                             rb.AddRelativeForce(new Vector3(0, wallJumpForce * 1.75f, 0), ForceMode.Impulse);
                             isWallJumping = true;
 
-                        }
+                            if(!jumpClip.isPlaying) {
+
+                                jumpClip.Play();
+
+                            }
+
+                    }
 
                     } 
 
@@ -183,16 +208,22 @@ public class Movement : MonoBehaviour
                 z = Input.GetAxisRaw("Jump")
             };
 
-        if(Input.GetKeyUp(KeyCode.Escape)){
+        return input;
+    }    
+
+    public void ToggleUI() {
+
+        if(Input.GetKey(KeyCode.Escape)) {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            UI.SetActive(true);
         } else if(Input.GetMouseButtonUp(0)) {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            UI.SetActive(false);
         }
 
-        return input;
-    }    
+    }
 
     public void LookRotation() {
 

@@ -33,9 +33,13 @@ PrefabInstance:
       propertyPath: m_Interpolate
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7518355505220657336, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
+      propertyPath: outlineWidth
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8730820609815892292, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
       propertyPath: m_Name
-      value: Moving Plain
+      value: Moving Plain Variant
       objectReference: {fileID: 0}
     - target: {fileID: 8730820609815892294, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
       propertyPath: m_Materials.Array.data[0]

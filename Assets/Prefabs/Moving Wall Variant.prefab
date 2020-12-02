@@ -41,9 +41,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3190661215541224946, guid: 938a3c856d35f82469f090c91434a68f, type: 3}
+      propertyPath: outlineWidth
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4193626246838005968, guid: 938a3c856d35f82469f090c91434a68f, type: 3}
       propertyPath: m_Name
-      value: Moving Wall
+      value: Moving Wall Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4193626246838005971, guid: 938a3c856d35f82469f090c91434a68f, type: 3}
       propertyPath: m_LocalPosition.x
