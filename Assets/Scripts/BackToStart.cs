@@ -16,12 +16,12 @@ public class BackToStart : MonoBehaviour
     }
     public void OnSelect() {
 
+        Debug.Log("I've been clicked");
         //Wait till the sound effect is done before going back to the main menu
         audioSource.Play();
         StartCoroutine(LoadScene(audioSource.clip.length));
 
     }
-    //Start the game
     public IEnumerator LoadScene(float waitTime) {
 
         yield return new WaitForSeconds(waitTime);

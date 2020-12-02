@@ -21,7 +21,7 @@ public class WinTrigger : MonoBehaviour
             //Debug.Log(SceneManager.GetActiveScene().buildIndex);
             
             //If its not the last level go to the next!
-            if(SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings) {
+            if(SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1) {
 
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 
