@@ -35,6 +35,8 @@ public class MovingWall : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         orign = transform.position;
         startPosition = orign;
+
+        //Set the target based on the selected axis
         if(axis == Axis.X){
 
             positionToMoveTo = orign + (new Vector3(distance,0,0) * direction);
@@ -59,6 +61,7 @@ public class MovingWall : MonoBehaviour
 
     void SwitchAxis(){
 
+        //Swap the target destination
         direction *= -1;
         startPosition = transform.position;
 
@@ -82,9 +85,8 @@ public class MovingWall : MonoBehaviour
     {
         t = currentProgress / duration;
 
+        //Interpolate the platform using smoothstep movement https://en.wikipedia.org/wiki/Smoothstep
         t = t * t * (3f - 2f * t);
-
-        //Debug.Log(currentProgress / duration);
 
         if (currentProgress < duration){
             
@@ -93,28 +95,13 @@ public class MovingWall : MonoBehaviour
 
         } else {
 
+            //When we reach the end swap the direction the platform is moving
             rb.MovePosition(targetPosition);
             currentProgress = 0;
             t = 0;
             SwitchAxis();
 
         }
-
-        // if(currentProgress >= 0.01f){
-
-        //     transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, duration);
-        //     currentProgress = Vector3.Distance(transform.position,targetPosition);
-
-        // } else {
-
-        //     rb.MovePosition(targetPosition);
-        //     currentProgress = 0.01f;
-        //     SwitchAxis();
-
-        // }
-
-        
-
 
     }
 }

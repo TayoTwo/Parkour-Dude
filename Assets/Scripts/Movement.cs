@@ -6,27 +6,32 @@ public class Movement : MonoBehaviour
 {
 
     public GameObject UI;
+
+    //Camera and rotation settings
     public Camera cam;
     public float sens;
+    float xRot;
+    float yRot;
+
+    //Variables used for the wall confirm animation
     public float wallRotAngle;
     public float currentAngle;
     public float targetAngle;
-    public float lerpDuration;
+    public float animDuration;
+
+    //Movement stats
     public float movSpeed;
     public float airSpeed;
     public float grav;
     public float currentSpeed;
     public float jumpForce;
     public float wallJumpForce;
-
     public float maxSpeed;
-
     public float drag;
 
+    //Markers used to define where to detect a wall from
     public Transform left;
     public Transform right;
-
-    public Rigidbody rb;
 
     public bool isGrounded;
     public bool wasGrounded;
@@ -36,23 +41,20 @@ public class Movement : MonoBehaviour
 
     public bool isGroundedWallR;
     public bool wasGroundedWallR;
-    
+
     public bool isJumping;
 
     public bool isWallJumping;
 
+    Rigidbody rb;
     SphereCollider playerCol;
-    private Quaternion charTargetRot;
-    private Quaternion cameraTargetRot;
-
-    float xRot = 0; 
-    float yRot = 0;
+    bool toggle;
 
     int layerMask = 1 << 8;
 
     AudioSource jumpClip;
     
-    // Start is called before the first frame update
+    // Assign our mouse sensitivity, walljump hitsphere locations and cursor visibilty
     void Awake(){
 
         sens = MouseSensitivity.sens;
@@ -67,7 +69,7 @@ public class Movement : MonoBehaviour
 
     }
 
-    // Update is called once per frame
+    //Update all physics related events in FixedUpdate
     void FixedUpdate(){
 
         Gravity();
@@ -75,6 +77,7 @@ public class Movement : MonoBehaviour
         
     }
 
+    //Update UI and camera rotation to ensure everything looks smooth to the user
     void Update(){
 
         ToggleUI();
@@ -82,6 +85,7 @@ public class Movement : MonoBehaviour
 
     }
     
+    //Assign custom gravity to the player
     void Gravity(){
 
         rb.AddForce(Vector3.down * grav,ForceMode.Acceleration);
@@ -89,7 +93,11 @@ public class Movement : MonoBehaviour
     }
     private void Move(){
 
-           
+            // Check if we are currently touching any walls or the ground
+            GroundCheck();
+            WallCheck();
+
+            //Define what why the camera should tilt depending on what side the player is touching a wall from   
             if(isGroundedWallL && !isGrounded && !isWallJumping){
 
                 //Debug.Log("Rotating right");
@@ -107,15 +115,14 @@ public class Movement : MonoBehaviour
 
             }
 
-            GroundCheck();
-            WallCheck();
-
+            //Recieve input from the player
             Vector3 input = GetInput();
             Vector3 desiredMove = new Vector3();
             
 
             if (isGrounded){
-
+                
+                //If grounded accelerate the player left-right,forward-back depending on where they are facing
                 isJumping = false;
                 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
 
@@ -125,12 +132,10 @@ public class Movement : MonoBehaviour
                 
                 rb.AddForce(desiredMove,ForceMode.Acceleration);
 
-                // always move along the camera forward as it is the direction that it being aimed at
 
                 if (!isJumping && input.z > 0){
 
-                    // rb.drag = 0;
-                    //rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                    //If jump is pressed and we aren't currently jumping then jump
                     rb.AddRelativeForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
                     isJumping = true;
 
@@ -141,7 +146,8 @@ public class Movement : MonoBehaviour
                     }
 
                 }
-                
+
+                //If we're above the maxSpeed start applying a drag force
                 if(currentSpeed > maxSpeed){
 
                     rb.AddForce(new Vector3(-rb.velocity.normalized.x * drag,0,-rb.velocity.normalized.z * drag),ForceMode.Acceleration);
@@ -153,8 +159,10 @@ public class Movement : MonoBehaviour
 
                 if(isGroundedWallL || isGroundedWallR){
 
-                    if (!isWallJumping){
+                    //If jump is pressed and we aren't currently wall jumping then perform a wall jump
+                    if(!isWallJumping){
 
+                        //If left or right is pressed while jumping then perform the jump diagonally in the direction
                         if(input.z > 0 && (input.x > 0 || input.y > 0)){
 
                             //rb.velocity = Vector3.zero;
@@ -168,7 +176,7 @@ public class Movement : MonoBehaviour
 
                             }
 
-                    } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
+                        } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
 
                             rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
                             rb.AddRelativeForce(new Vector3(0, wallJumpForce * 1.75f, 0), ForceMode.Impulse);
@@ -186,6 +194,7 @@ public class Movement : MonoBehaviour
 
                 }
 
+                //If not grounded then move the player using airSpeed instead of movSpeed
                 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
 
                 desiredMove.x = desiredMove.x * airSpeed;
@@ -194,13 +203,16 @@ public class Movement : MonoBehaviour
 
             } 
 
-
+            //Base our speed on the x and z axis only
             currentSpeed = new Vector3(rb.velocity.x,0,rb.velocity.z).magnitude;
 
             
     }   
     private Vector3 GetInput(){
-            
+        
+        //AD on X axis
+        //WS on Y axis
+        //Space on Z axis
         Vector3 input = new Vector3
             {
                 x = Input.GetAxisRaw("Horizontal"),
@@ -213,11 +225,18 @@ public class Movement : MonoBehaviour
 
     public void ToggleUI() {
 
-        if(Input.GetKey(KeyCode.Escape)) {
+        //Press Escape to toggle cursor lock and the UI
+        if(Input.GetKeyUp(KeyCode.Escape)){
+
+            toggle = !toggle;
+
+        }
+
+        if(toggle) {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             UI.SetActive(true);
-        } else if(Input.GetMouseButtonUp(0)) {
+        } else {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             UI.SetActive(false);
@@ -227,6 +246,7 @@ public class Movement : MonoBehaviour
 
     public void LookRotation() {
 
+            //Rotate the camera based on sens
             xRot += Input.GetAxis("Mouse X") * sens;
             yRot += Input.GetAxis("Mouse Y") * sens;
 
@@ -239,59 +259,48 @@ public class Movement : MonoBehaviour
 
         }
 
-    public void WallRotate(float target){
-
+        public void WallRotate(float target){
+        //Because the wall confirm animation takes time we must run it as a coroutine 
         StartCoroutine(
 
-                LerpToTarget(
+                RotateToTarget(
                         cam.transform.localRotation.eulerAngles.z,
                         target,
-                        lerpDuration
+                        animDuration
                         )
         
             );
-
-        //cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x,0,currentAngle));
-        // The step size is equal to speed times frame time.
-        // Rotate our transform a step closer to the target's.
         
-
     }
 
-    IEnumerator LerpToTarget(float start,float end,float dur){
+    IEnumerator RotateToTarget(float start,float end,float dur){
 
         float timeElapsed = 0;
 
-        //Debug.Log("Start:" + start + " End " + end);
-        if(currentAngle != end){
+        currentAngle = cam.transform.localRotation.z;
+        //if the animation hasn't hit the end keep running
+        while(timeElapsed < animDuration) {
 
-            currentAngle = cam.transform.localRotation.z;
-
-            while (timeElapsed < lerpDuration)
-            {
-                
-                currentAngle = Mathf.LerpAngle(start, end, timeElapsed / lerpDuration);
-                timeElapsed += Time.deltaTime;
-                cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x,0,currentAngle));
-                yield return null;
-            }
-
-
+            //linearly Lerp from one angle to another
+            currentAngle = Mathf.LerpAngle(start, end, timeElapsed / animDuration);
+            timeElapsed += Time.deltaTime;
+            cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x, 0, currentAngle));
+            yield return null;
         }
+
+        //Once the animation ends set the angle to its target
+        cam.transform.localRotation = Quaternion.Euler(new Vector3(cam.transform.localRotation.eulerAngles.x, 0, end));
 
 
     }
     void OnDrawGizmos() {
 
-        Vector3 groundCheckPos = new Vector3(transform.position.x,transform.position.y - playerCol.radius,transform.position.z);
-
+        //Draw our ground detection hitsphere
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(groundCheckPos, playerCol.radius/4f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - playerCol.radius, transform.position.z), playerCol.radius/4f);
 
+        //Draw our wall detection hitspheres
         Gizmos.color = Color.red;
-
-        
-
         Gizmos.DrawSphere(transform.TransformPoint(new Vector3(left.localPosition.x,left.localPosition.y,left.localPosition.z + playerCol.radius)), playerCol.radius * 0.75f);
         Gizmos.DrawSphere(transform.TransformPoint(new Vector3(left.localPosition.x,left.localPosition.y,left.localPosition.z - playerCol.radius)), playerCol.radius * 0.75f);
         Gizmos.DrawSphere(transform.TransformPoint(new Vector3(right.localPosition.x ,right.localPosition.y,right.localPosition.z + playerCol.radius)), playerCol.radius * 0.75f);
@@ -301,6 +310,8 @@ public class Movement : MonoBehaviour
     private void GroundCheck(){
 
             wasGrounded = isGrounded;
+
+            //Look for any colliders within the hitsphere
             if (Physics.CheckSphere(new Vector3(transform.position.x,transform.position.y - playerCol.radius,transform.position.z), playerCol.radius/4f,layerMask)){
 
                 isGrounded = true;
@@ -310,7 +321,10 @@ public class Movement : MonoBehaviour
                 isGrounded = false;
 
             }
-            if (!wasGrounded && isGrounded && isJumping){
+
+
+            //if they weren't touching the ground before but now they are give the player the ability to jump
+            if(!wasGrounded && isGrounded){
 
                 isJumping = false;
 
@@ -320,14 +334,16 @@ public class Movement : MonoBehaviour
 
             if(isGroundedWallL != wasGroundedWallL || isGroundedWallR != wasGroundedWallR){
 
-                Debug.Log("Starting Rotate");
+                //Debug.Log("Starting Rotate Animtion");
                 WallRotate(targetAngle);
 
             } 
 
             wasGroundedWallL = isGroundedWallL;
             wasGroundedWallR = isGroundedWallR;
-            if (Physics.CheckCapsule(
+
+            //Look for any colliders within the left hitcapsule
+            if(Physics.CheckCapsule(
             new Vector3(left.position.x,left.position.y,left.position.z + playerCol.radius)
             ,new Vector3(left.position.x,left.position.y,left.position.z - playerCol.radius)
             ,playerCol.radius * 0.75f
@@ -342,7 +358,8 @@ public class Movement : MonoBehaviour
 
             }
 
-            if (Physics.CheckCapsule(
+            //Look for any colliders within the right  hitcapsule
+            if(Physics.CheckCapsule(
            new Vector3(right.position.x ,right.position.y,right.position.z + playerCol.radius)
             ,new Vector3(right.position.x ,right.position.y,right.position.z - playerCol.radius)
             ,playerCol.radius * 0.75f
@@ -356,7 +373,8 @@ public class Movement : MonoBehaviour
 
             }
 
-            if (!isGroundedWallL && !isGroundedWallR){
+            //if we aren't touching any walls give the player the ability to wall jump
+            if(!isGroundedWallL && !isGroundedWallR){
 
                 isWallJumping = false;
 

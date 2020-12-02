@@ -17,7 +17,7 @@ public class DropPlain : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+    //Drop after a delay
     IEnumerator Drop(){
 
         yield return new WaitForSeconds(timeTillDrop);
@@ -25,6 +25,7 @@ public class DropPlain : MonoBehaviour
 
     }
 
+    //If the player touches me start the coroutine
     void OnCollisionEnter(Collision col){
 
         if (col.gameObject.tag == "Player"){

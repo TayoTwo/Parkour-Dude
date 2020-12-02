@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class DeathTrigger : MonoBehaviour{
 
+    //When the player touches me restart the level, if it is a following platform destroy it
     void OnTriggerEnter(Collider col){
 
         if(col.gameObject.tag == "Player"){

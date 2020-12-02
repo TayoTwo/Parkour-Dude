@@ -5,7 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class BackToStart : MonoBehaviour
 {
-    public void OnClick() {
+
+    AudioSource audioSource;
+
+    public void Awake() {
+
+        audioSource = GetComponent<AudioSource>();
+
+
+    }
+    public void OnSelect() {
+
+        //Wait till the sound effect is done before going back to the main menu
+        audioSource.Play();
+        StartCoroutine(LoadScene(audioSource.clip.length));
+
+    }
+    //Start the game
+    public IEnumerator LoadScene(float waitTime) {
+
+        yield return new WaitForSeconds(waitTime);
 
         SceneManager.LoadScene(0);
 

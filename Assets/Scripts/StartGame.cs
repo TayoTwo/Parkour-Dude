@@ -21,7 +21,9 @@ public class StartGame : MonoBehaviour
 
     public void OnClick() {
 
+        //Set the user's sensitivity globally
         MouseSensitivity.sens = slider.value;
+        //Play a sound effect before starting the game
         audioSource.Play();
         StartCoroutine(LoadScene(audioSource.clip.length));
 
