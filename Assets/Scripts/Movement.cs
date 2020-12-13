@@ -21,10 +21,12 @@ public class Movement : MonoBehaviour
 
     //Movement stats
     public float movSpeed;
-    public float airSpeed;
+    public float verAirSpeed;
+    public float horAirSpeed;
     public float grav;
     public float currentSpeed;
     public float jumpForce;
+    public float jumpRatio = 1.85f;
     public float wallJumpForce;
     public float maxSpeed;
     public float drag;
@@ -66,6 +68,13 @@ public class Movement : MonoBehaviour
         right.localPosition = new Vector3(-playerCol.radius,0,0);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+    }
+
+    void Start() {
+
+        GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().ResetVars();
+        UI = GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().pauseUI;
 
     }
 
@@ -125,6 +134,7 @@ public class Movement : MonoBehaviour
                 //If grounded accelerate the player left-right,forward-back depending on where they are facing
                 isJumping = false;
                 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                desiredMove.Normalize();
 
                 desiredMove.x = desiredMove.x * movSpeed;
                 desiredMove.y = rb.velocity.y;
@@ -167,7 +177,7 @@ public class Movement : MonoBehaviour
 
                             //rb.velocity = Vector3.zero;
                             rb.velocity = new Vector3(rb.velocity.x * 0.25f,0,rb.velocity.z* 0.25f);
-                            rb.AddRelativeForce(new Vector3(wallJumpForce * input.x, wallJumpForce * 1.85f, wallJumpForce), ForceMode.Impulse);
+                            rb.AddRelativeForce(new Vector3(wallJumpForce * input.x, wallJumpForce * jumpRatio, wallJumpForce), ForceMode.Impulse);
                             isWallJumping = true;
 
                             if(!jumpClip.isPlaying) {
@@ -179,7 +189,7 @@ public class Movement : MonoBehaviour
                         } else if(input.z > 0 && (input.x == 0 && input.y == 0)){
 
                             rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
-                            rb.AddRelativeForce(new Vector3(0, wallJumpForce * 1.75f, 0), ForceMode.Impulse);
+                            rb.AddRelativeForce(new Vector3(0, wallJumpForce * jumpRatio, 0), ForceMode.Impulse);
                             isWallJumping = true;
 
                             if(!jumpClip.isPlaying) {
@@ -196,9 +206,11 @@ public class Movement : MonoBehaviour
 
                 //If not grounded then move the player using airSpeed instead of movSpeed
                 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                desiredMove.Normalize();
 
-                desiredMove.x = desiredMove.x * airSpeed;
-                desiredMove.z = desiredMove.z * airSpeed;
+                desiredMove.x = desiredMove.x * horAirSpeed;
+                desiredMove.z = desiredMove.z * verAirSpeed;
+                
                 rb.AddForce(desiredMove, ForceMode.Acceleration);
 
             } 

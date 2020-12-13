@@ -154,7 +154,6 @@ GameObject:
   - component: {fileID: 3792590105382686831}
   - component: {fileID: 3792590105382686830}
   - component: {fileID: 3792590104263825176}
-  - component: {fileID: 3792590104263825175}
   - component: {fileID: 5175788399590084417}
   m_Layer: 8
   m_Name: Player
@@ -217,13 +216,15 @@ MonoBehaviour:
   targetAngle: 30
   animDuration: 0.1
   movSpeed: 20
-  airSpeed: 11
+  verAirSpeed: 11
+  horAirSpeed: 16
   grav: 12
   currentSpeed: 0
   jumpForce: 32
+  jumpRatio: 1.85
   wallJumpForce: 42
   maxSpeed: 7
-  drag: 20
+  drag: 15
   left: {fileID: 3792590104332679703}
   right: {fileID: 3792590104397474618}
   isGrounded: 0
@@ -259,7 +260,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: a5545d47d2a25a04083eada941f1edd0, type: 2}
   m_audioClip: {fileID: 8300000, guid: 57b182645432ce84f82c77b2333fe34e, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -343,18 +344,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3792590104263825175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3792590105382686828}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a643eaabba23db4489ab564bf21d494, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5175788399590084417
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class WinTrigger : MonoBehaviour
 {
     public GameObject winScreen;
+    public GameObject nextLevelScreen;
     public float rotSpeed;
 
     private void Update() {
@@ -18,12 +20,17 @@ public class WinTrigger : MonoBehaviour
 
         if(col.gameObject.tag == "Player"){
 
+            Timer.Stop();
             //Debug.Log(SceneManager.GetActiveScene().buildIndex);
-            
+
             //If its not the last level go to the next!
             if(SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1) {
 
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                Destroy(col.gameObject.GetComponent<Movement>());
+                col.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().nextLevelScreen.SetActive(true);
 
             } else {
 
@@ -32,7 +39,7 @@ public class WinTrigger : MonoBehaviour
                 col.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                winScreen.SetActive(true);
+                GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().winScreen.SetActive(true);
 
             }
 

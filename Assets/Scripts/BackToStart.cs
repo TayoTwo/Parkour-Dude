@@ -25,7 +25,7 @@ public class BackToStart : MonoBehaviour
     public IEnumerator LoadScene(float waitTime) {
 
         yield return new WaitForSeconds(waitTime);
-
+        Destroy(GameObject.FindGameObjectWithTag("MainUI"));
         SceneManager.LoadScene(0);
 
     }
