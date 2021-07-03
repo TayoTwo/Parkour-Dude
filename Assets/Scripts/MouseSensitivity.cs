@@ -5,6 +5,6 @@ using UnityEngine;
 public class MouseSensitivity : MonoBehaviour
 {
     //Store the players sens globally
-    public static float sens;
+    public static float sens = 4;
 
 }

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e2decb2ca64ca5439312408151f2451, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlain: 1
+  platForce: 10
   axis: 2
   distance: 10
   orign: {x: 0, y: 0, z: 0}
@@ -45,6 +47,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 1919dcd7a96219c4795d882d1d0692d6, type: 2}
+    - target: {fileID: 8730820609815892295, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 8d57c8a730db389498216f7d0b18b977, type: 2}
+    - target: {fileID: 8730820609815892295, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8730820609815892296, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
       propertyPath: m_LocalPosition.x
       value: -40

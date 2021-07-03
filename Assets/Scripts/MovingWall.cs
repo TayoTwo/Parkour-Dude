@@ -13,6 +13,8 @@ public enum Axis
 public class MovingWall : MonoBehaviour
 {
 
+    public bool isPlain;
+    public float platForce;
     public Axis axis;
 
     public float distance;
@@ -31,6 +33,15 @@ public class MovingWall : MonoBehaviour
     float t;
     void Start()
     {
+        if(transform.rotation.z == 90f) {
+
+            isPlain = false;
+
+        } else {
+
+            isPlain = true;
+
+        }
 
         rb = GetComponent<Rigidbody>();
         orign = transform.position;
@@ -81,6 +92,19 @@ public class MovingWall : MonoBehaviour
 
     }
 
+    void OnCollisionStay(Collision col) {
+
+        Debug.Log("Touching :flushed:");
+        Debug.Log(rb.velocity);
+
+        if(col.gameObject.tag == "Player" && isPlain) {
+
+            col.gameObject.GetComponent<Rigidbody>().AddForce(rb.velocity * platForce);
+
+        }
+
+    }
+
     void MovePlat(Vector3 targetPosition)
     {
         t = currentProgress / duration;
@@ -103,5 +127,6 @@ public class MovingWall : MonoBehaviour
 
         }
 
+        
     }
 }
