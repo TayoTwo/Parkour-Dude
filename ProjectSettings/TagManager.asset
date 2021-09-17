@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FallingP
   - MainUI
+  - InputManager
   layers:
   - Default
   - TransparentFX
