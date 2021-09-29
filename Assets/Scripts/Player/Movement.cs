@@ -113,7 +113,10 @@ public class Movement : MonoBehaviour {
 
             } else {
 
-                if(isGroundedWallL || isGroundedWallR){
+                //Wall Jump
+                if((isGroundedWallL || isGroundedWallR)){
+
+                    rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
 
                     //If jump is pressed and we aren't currently wall jumping then perform a wall jump
                     if(!isWallJumping){
@@ -160,6 +163,8 @@ public class Movement : MonoBehaviour {
                 rb.AddForce(desiredMove, ForceMode.Acceleration);
 
             } 
+
+            
 
             //Base our speed on the x and z axis only
             currentSpeed = new Vector3(rb.velocity.x,0,rb.velocity.z).magnitude;

@@ -978,12 +978,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+      propertyPath: maxSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
       propertyPath: movSpeed
-      value: 20
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
       propertyPath: jumpForce
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+      propertyPath: verAirSpeed
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
       propertyPath: wallJumpForce
