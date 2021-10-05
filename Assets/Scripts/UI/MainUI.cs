@@ -20,8 +20,13 @@ public class MainUI:MonoBehaviour {
 
         DontDestroyOnLoad(this.gameObject);
 
-        ResetVars();
 
+
+    }
+
+    void Start(){
+
+        ResetVars();
 
     }
 

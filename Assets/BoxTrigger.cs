@@ -20,6 +20,20 @@ public class BoxTrigger : MonoBehaviour{
         
     }
 
+    void OnTriggerStay(Collider other){
+
+        if(other.tag != "Player"){
+
+            isTrue = true;
+
+        } else {
+
+            isTrue = false;
+
+        }
+
+    }
+
     void OnTriggerExit(Collider other) {
 
         isTrue = false;

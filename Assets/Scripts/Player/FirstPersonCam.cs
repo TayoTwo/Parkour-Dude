@@ -13,8 +13,6 @@ public class FirstPersonCam : MonoBehaviour{
     public float animDuration;
 
     Camera cam;
-    GameObject UI;
-    bool toggle;
     float sens;
     float x;
     float y;
@@ -23,41 +21,18 @@ public class FirstPersonCam : MonoBehaviour{
 
         sens = InputManager.sens;
         im = GameObject.FindWithTag("InputManager").GetComponent<InputManager>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        im.ChangeMouseState(CursorLockMode.Locked, false);
         cam = GetComponentInChildren<Camera>();
-        GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().ResetVars();
-        UI = GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().pauseUI;
 
     }
 
     void Update(){
 
         LookRotation();
-        ToggleUI();
 
     }
 
-    public void ToggleUI() {
 
-        //Press Escape to toggle cursor lock and the UI
-        if(Input.GetKeyUp(KeyCode.Escape)){
-
-            toggle = !toggle;
-
-        }
-
-        if(toggle) {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            UI.SetActive(true);
-        } else {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            UI.SetActive(false);
-        }
-
-    }
 
     public void LookRotation() {
 
