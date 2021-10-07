@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FirstPersonCam : MonoBehaviour{
 
@@ -23,6 +24,7 @@ public class FirstPersonCam : MonoBehaviour{
         im = GameObject.FindWithTag("InputManager").GetComponent<InputManager>();
         im.ChangeMouseState(CursorLockMode.Locked, false);
         cam = GetComponentInChildren<Camera>();
+        
 
     }
 

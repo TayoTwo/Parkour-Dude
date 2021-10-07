@@ -18,13 +18,15 @@ public class MainUI:MonoBehaviour {
             Destroy(this.gameObject);
         }
 
+        ResetVars();
+
         DontDestroyOnLoad(this.gameObject);
-
-
 
     }
 
-    void Start(){
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("OnSceneLoaded: " + scene.name);
 
         ResetVars();
 
@@ -32,6 +34,7 @@ public class MainUI:MonoBehaviour {
 
     public void ResetVars() {
 
+        Debug.Log("Reseting the UI!");
         Timer.stop = false;
         Timer.time = 0f;
         nextLevelScreen.SetActive(false);

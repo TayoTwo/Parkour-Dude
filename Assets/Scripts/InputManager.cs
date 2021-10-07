@@ -27,11 +27,15 @@ public class InputManager : MonoBehaviour{
 
         DontDestroyOnLoad(this.gameObject);
 
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+
     }
 
-    // Start is called before the first frame update
-    void Start(){
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode){
 
+        Debug.Log("OnSceneLoaded: " + scene.name);
+         
         GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().ResetVars();
         UI = GameObject.FindGameObjectWithTag("MainUI").GetComponent<MainUI>().pauseUI;
 
