@@ -59,7 +59,6 @@ public class Movement : MonoBehaviour {
     void FixedUpdate(){
 
         Gravity();
-        PlatDrag();
         Move();
         
     }
@@ -132,6 +131,24 @@ public class Movement : MonoBehaviour {
                 rb.AddForce(desiredMove, ForceMode.Acceleration);
 
             } else if (isGrounded){
+
+                RaycastHit hit;
+                Rigidbody plat;
+
+                if(Physics.Raycast(transform.position,transform.TransformDirection(Vector3.down), out hit, playerCol.radius + 0.1f, layerMask)){
+
+                    plat = hit.collider.GetComponent<Rigidbody>();
+
+                    if(plat.velocity != Vector3.zero){
+
+                        // Debug.Log(plat.velocity - rb.velocity);
+
+                        // rb.AddForce(plat.velocity - rb.velocity, ForceMode.VelocityChange);
+
+                    }
+
+
+                }
                 
                 //If grounded accelerate the player left-right,forward-back depending on where they are facing
                 isJumping = false;
@@ -141,6 +158,7 @@ public class Movement : MonoBehaviour {
                 desiredMove.x = desiredMove.x * movAcc;
                 desiredMove.z = desiredMove.z * movAcc;
                 
+                rb.AddForce(plat.velocity - rb.velocity, ForceMode.VelocityChange);
                 rb.AddForce(desiredMove,ForceMode.Acceleration);
 
                 //If the jump button is pressed and we are not touching a wall jump normally
@@ -182,11 +200,18 @@ public class Movement : MonoBehaviour {
             if(Physics.Raycast(transform.position,transform.TransformDirection(Vector3.down), out hit, playerCol.radius + 0.1f, layerMask)){
 
                 plat = hit.collider.GetComponent<Rigidbody>();
-                rb.AddForce(plat.velocity, ForceMode.Acceleration);
+
+                if(plat.velocity != Vector3.zero){
+
+                    // Debug.Log(plat.velocity - rb.velocity);
+
+                    // rb.AddForce(plat.velocity - rb.velocity, ForceMode.VelocityChange);
+
+                }
+
+                rb.velocity = 
 
             }
-
-
 
         }
 
