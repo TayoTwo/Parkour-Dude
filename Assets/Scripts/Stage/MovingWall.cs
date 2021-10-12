@@ -14,7 +14,7 @@ public class MovingWall : MonoBehaviour
 {
 
     public bool isPlain;
-    public float platForce;
+    public static float platForce = 0.5f;
     public Axis axis;
 
     public float distance;

@@ -14,7 +14,7 @@ public class FirstPersonCam : MonoBehaviour{
     public float animDuration;
 
     Camera cam;
-    float sens;
+    float sens = 4;
     float x;
     float y;
 

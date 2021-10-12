@@ -13,7 +13,7 @@ public class ShowSens : MonoBehaviour
     // Update is called once per frame
     void Update(){
         //Show the current value of the slider
-        text.text = "Sens: " + slider.value.ToString();
+        text.text = "Sens: " + slider.value.ToString("0.00");
         
     }
 }

@@ -209,6 +209,7 @@ GameObject:
   - component: {fileID: 3792590105382686825}
   - component: {fileID: 1169803987578711856}
   - component: {fileID: 3792590105382686831}
+  - component: {fileID: 3206113755662985523}
   - component: {fileID: 3792590105382686830}
   - component: {fileID: 3792590104263825176}
   m_Layer: 8
@@ -281,22 +282,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 168dd0ff851b46d48bdf77eba8b48566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  im: {fileID: 0}
+  wallMovement: {fileID: 0}
+  ground: {fileID: 9214593302562138888}
+  rb: {fileID: 0}
+  jumpClip: {fileID: 0}
   movAcc: 20
   airAcc: 20
   grav: 9.81
   currentSpeed: 0
   jumpForce: 4
   jumpRatio: 2
-  wallJumpForce: 7.5
   maxMoveSpeed: 15
+  isGrounded: 0
+  wasGrounded: 0
+  isJumping: 0
+--- !u!114 &3206113755662985523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792590105382686828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec9fe0393ffe74f4f901ffd1ec866b95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movement: {fileID: 0}
   left: {fileID: 797854069521743928}
   right: {fileID: 5964698200927823689}
-  ground: {fileID: 9214593302562138888}
-  isGrounded: 0
-  isJumping: 0
   isTouchingLeft: 0
   isTouchingRight: 0
   isWallJumping: 0
+  wallJumpForce: 7.5
 --- !u!135 &3792590105382686830
 SphereCollider:
   m_ObjectHideFlags: 0
