@@ -43,7 +43,7 @@ public class WallMovement : MonoBehaviour{
 
             if((isTouchingLeft || isTouchingRight)){
 
-                movement.grav = 0.1f;
+                //movement.grav = 0.1f;
 
                 if(isTouchingLeft){
 
@@ -58,6 +58,7 @@ public class WallMovement : MonoBehaviour{
                     //If jump is pressed and we aren't currently wall jumping then perform a wall jump
                 if(movement.im.input.z > 0 && !isWallJumping){
 
+                    rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
                     rb.AddRelativeForce(new Vector3(wallJumpForce * wallJumpDir, wallJumpForce * movement.jumpRatio, 0), ForceMode.Impulse);
 
                     isWallJumping = true;

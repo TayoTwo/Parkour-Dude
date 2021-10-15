@@ -247,6 +247,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8730820609815892296, guid: b3f14279c57e40444bb58f7ba1847df3, type: 3}
   m_PrefabInstance: {fileID: 146737963}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &579159976 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3792590104263825176, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+  m_PrefabInstance: {fileID: 3792590104263825173}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &702236498
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -897,6 +902,18 @@ PrefabInstance:
     - target: {fileID: 3792590105382686828, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+      propertyPath: jumpClip
+      value: 
+      objectReference: {fileID: 579159976}
+    - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+      propertyPath: jumpForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3792590105382686831, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
+      propertyPath: jumpRatio
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11ff362f36931d34fa1f24f88f5524ad, type: 3}
