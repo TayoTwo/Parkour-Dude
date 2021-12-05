@@ -7,6 +7,7 @@ TagManager:
   - FallingP
   - MainUI
   - InputManager
+  - MovingP
   layers:
   - Default
   - TransparentFX

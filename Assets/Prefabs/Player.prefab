@@ -286,17 +286,15 @@ MonoBehaviour:
   wallMovement: {fileID: 0}
   ground: {fileID: 9214593302562138888}
   rb: {fileID: 0}
-  jumpClip: {fileID: 0}
+  jumpClip: {fileID: 3792590104263825176}
   movAcc: 20
   airAcc: 20
-  grav: 9.81
   currentSpeed: 0
-  jumpForce: 4
-  jumpRatio: 2
   maxMoveSpeed: 15
-  isGrounded: 0
-  wasGrounded: 0
-  isJumping: 0
+  decelForce: 20
+  jumpForce: 5
+  jumpRatio: 1.5
+  grav: 9.81
 --- !u!114 &3206113755662985523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,7 +449,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3792590105904177554}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3792590105382686824}

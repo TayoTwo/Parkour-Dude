@@ -94,11 +94,9 @@ public class MovingWall : MonoBehaviour
 
     void OnCollisionStay(Collision col) {
 
-        Debug.Log("Touching :flushed:");
-        Debug.Log(rb.velocity);
-
         if(col.gameObject.tag == "Player" && isPlain) {
 
+            col.gameObject.GetComponent<Movement>().UpdateObjTag(gameObject.tag);
             col.gameObject.GetComponent<Rigidbody>().AddForce(rb.velocity * platForce);
 
         }

@@ -5,8 +5,11 @@ using UnityEngine;
 public class BoxTrigger : MonoBehaviour{
 
     public bool isTrue;
+    public string objTag;
 
     void OnTriggerEnter(Collider other) {
+
+        tag = other.tag;
 
         if(other.tag != "Player"){
 
@@ -22,6 +25,8 @@ public class BoxTrigger : MonoBehaviour{
 
     void OnTriggerStay(Collider other){
 
+        tag = other.tag;
+
         if(other.tag != "Player"){
 
             isTrue = true;
@@ -35,7 +40,8 @@ public class BoxTrigger : MonoBehaviour{
     }
 
     void OnTriggerExit(Collider other) {
-
+        
+        tag = "";
         isTrue = false;
         
     }

@@ -11,7 +11,7 @@ public class GameVersion : MonoBehaviour
     TextMeshProUGUI text;
 
     // Start is called before the first frame update
-    void Awake(){
+    void OnEnable(){
 
         text = GetComponent<TextMeshProUGUI>();
 

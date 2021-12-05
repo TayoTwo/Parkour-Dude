@@ -4,28 +4,29 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour {
 
+    [Header("Components")]
     public InputManager im;
     public WallMovement wallMovement;
-
     public BoxTrigger ground;
     public Rigidbody rb;
     public AudioSource jumpClip;
-
-    //Movement stats
+    [Header("Movement Stats")]
     public float movAcc;
     public float airAcc;
-    public float grav = 9.81f;
     public float currentSpeed;
+    public float maxMoveSpeed;
+    public float decelForce;
+    [Header("Jump Stats")]
     public float jumpForce;
     public float jumpRatio = 1.85f;
-
-    public float maxMoveSpeed;
+    public float grav = 9.81f;
 
     //Varibles that dictate if the player can jump
-    public bool isGrounded;
-    public  bool wasGrounded;
-    public bool isJumping;
-
+    bool isGrounded;
+    bool wasGrounded;
+    string objTag;
+    bool isJumping;
+    bool onPlatform;
     Camera cam;
 
     // Assign our mouse sensitivity, walljump hitsphere locations and cursor visibilty
@@ -43,9 +44,10 @@ public class Movement : MonoBehaviour {
     //Update all physics related events in FixedUpdate
     void FixedUpdate(){
 
-        Gravity();
         GroundCheck();
         Move();
+        Drag();
+        Gravity();
         
     }
 
@@ -56,20 +58,33 @@ public class Movement : MonoBehaviour {
 
     }
 
+    void Drag(){
+
+        if(im.inputs.x == 0 && im.inputs.y == 0 && objTag != "MovingP"){
+
+            Vector3 dragDir = new Vector3(-rb.velocity.normalized.x * decelForce,
+                                        0,
+                                        -rb.velocity.normalized.z * decelForce);
+            rb.AddForce(dragDir);
+
+        }
+
+    }
+
     //Take the player's inputs and move the player accordingly 
     void Move(){
 
-
             //Recieve input from the player
-            Vector3 input = im.input;
+            Vector3 inputs = im.inputs;
             Vector3 desiredMove = new Vector3();
 
             if(!isGrounded){
 
+                objTag = "";
                 //If the player is touching walld decrease the gravity
                 
                 //If not grounded then move the player using airSpeed instead of movSpeed
-                desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                desiredMove = cam.transform.forward*inputs.y + cam.transform.right*inputs.x;
                 desiredMove.Normalize();
 
                 desiredMove.x = desiredMove.x * airAcc;
@@ -79,11 +94,9 @@ public class Movement : MonoBehaviour {
 
             } else if (isGrounded){
 
-                RaycastHit hit;
-                
                 //If grounded accelerate the player left-right,forward-back depending on where they are facing
                 isJumping = false;
-                desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                desiredMove = cam.transform.forward*inputs.y + cam.transform.right*inputs.x;
                 desiredMove.Normalize();
 
                 desiredMove.x = desiredMove.x * movAcc;
@@ -92,7 +105,7 @@ public class Movement : MonoBehaviour {
                 rb.AddForce(desiredMove,ForceMode.Acceleration);
 
                 //If the jump button is pressed and we are not touching a wall jump normally
-                if (!isJumping && input.z > 0 && (!wallMovement.isTouchingLeft || !wallMovement.isTouchingRight) ){
+                if (!isJumping && inputs.z > 0 && (!wallMovement.isTouchingLeft || !wallMovement.isTouchingRight) ){
 
                     //If jump is pressed and we aren't currently jumping then jump
                     rb.AddRelativeForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
@@ -123,19 +136,22 @@ public class Movement : MonoBehaviour {
     void GroundCheck(){
 
         wasGrounded = isGrounded;
-
         isGrounded = ground.isTrue;
         
         //if they weren't touching the ground before but now they are give the player the ability to jump
         if(!wasGrounded &&  isGrounded){
 
-             isJumping = false;
+            isJumping = false;
 
         }
 
     }
 
+    public void UpdateObjTag(string tag){
+        Debug.Log(objTag);
+        objTag = tag;
 
+    }
 
     // void OnDrawGizmos() {
 
